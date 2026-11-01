@@ -115,7 +115,7 @@
 
 - `ActionClip.sample(t)` 采样骨骼 rotation/translation 与 morph 权重；
 - 关键帧使用四元数球面插值（Euler 输入）；
-- 动作切换用交叉淡入（从旧动作采样到新动作采样）；
+- 动作切换用交叉淡入（从旧动作采样到新动作采样）
 - `drag_dangle` 与程序化惯性 overlay 叠加；
 - 单次动作结束后由窗口层在 0.45 秒后切回待机；
 - 支持循环动作、动作时长推断、未知骨骼/表情软忽略。
@@ -124,7 +124,7 @@
 
 `ui/edge.py` 的 `EdgeController` 只负责环境行为：
 
-- 按权重选择侧边/顶部/底部鸭子坐；下边缘固定为坐姿，与拖拽方向无关；
+- 按权重选择侧边/顶部/底部；
 - 用 `QVariantAnimation` 移动透明窗口，不改变窗口方向；
 - 用 renderer 的 `stage_roll_degrees` / `stage_yaw_degrees` / `stage_scale`
   做模型倾斜与缩放；所有边缘姿态都使用同一常规窗口尺寸；

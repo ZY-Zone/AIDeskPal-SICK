@@ -75,7 +75,6 @@ plugins/
 | `settings.write` | `api.update_settings()` |
 | `network` | 声明插件会访问网络（仅提示用户；Python 本身不受限） |
 
-市场服务端会拒绝未知权限；上传时请让权限列表最小化。
 
 ## 3. 生命周期
 
