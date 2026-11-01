@@ -7,18 +7,13 @@
 
 ```
 actions/
-  starling/          # 内置示例动作包
-    idle_starlight.json
-    wave_hello.json
+  <model_id>/              # 一个动作包，目录名建议与 JSON 里的 model 一致
+    <action_id>.json       # 每个动作一个文件
     passive/
       drag_dangle.json
       drag_land.json
     pack.json              # 可选的包元数据，不参与动作解析
-  starling/                # 内置：原创示例模型
-    idle_twinkle.json
-    ...
-  <你的模型 id>/
-    <动作 id>.json
+    character.json         # 可选的角色设定，绑定到同一个 model
 ```
 
 用户动作目录：`<数据目录>\actions\`，结构与上面相同。发行版的默认数据目录是 exe 同级的
@@ -35,7 +30,7 @@ actions/
 ```json
 {
   "schema_version": "1.0",
-  "model": "starling",
+  "model": "my_model",
   "id": "wave_hello",
   "name": "挥手打招呼",
   "description": "抬起一只手到肩上方，轻轻左右挥动。适用于用户启动程序、回到座位或主动打招呼时。",
@@ -78,7 +73,7 @@ actions/
 
 | 字段 | 类型 | 含义 |
 | --- | --- | --- |
-| `model` | string | 属于哪个建模/动作包，例如 `starling` |
+| `model` | string | 属于哪个建模/动作包，需与模型的动作包 ID 一致 |
 | `id` | string | 动作 id；字母、数字、`_`、`-`，在当前模型内唯一 |
 | `description` | string | 面向 AI 的选择依据：描述动作画面 + 何时使用 |
 | `content` | object | 详细动作内容；至少包含 `duration` 和 `bones` |
@@ -145,7 +140,7 @@ AIDeskPal-SICK 在加载 PMX 时会镜像 Z 轴，把 MMD 的左手坐标转换�
 - 旋转是**骨骼局部**旋转，以骨骼原点为轴心；父骨骼会带动子骨骼
 - 平移是 `[x, y, z]` 模型单位，相对于父骨骼的静止位置
 
-MMD 模型的手臂在 A/T-pose 下的轴向与常见动作习惯相关。内置示例角色动作采用：
+MMD 模型的手臂在 A/T-pose 下的轴向与常见动作习惯相关。常用的手部基准姿态：
 
 - 基础放松手臂：`左腕 [0, -50, -40]`，`右腕 [0, 50, 40]`
 - 抬手：在 Z 轴上继续增大绝对值（左侧为负方向）
@@ -154,7 +149,7 @@ MMD 模型的手臂在 A/T-pose 下的轴向与常见动作习惯相关。内置
 运行时使用 CPU 线性混合蒙皮（BDEF1/2/4，SDEF 近似为 BDEF2）；
 不会自动求解 PMX IK，也不会模拟刚体头发/裙摆。请用关键帧直接设计肢体。
 
-## 5. 被动动作与拖动
+## 4. 被动动作与拖动
 
 拖动由 `PetWindow` 强制播放，不经过 AI：
 
@@ -166,7 +161,7 @@ MMD 模型的手臂在 A/T-pose 下的轴向与常见动作习惯相关。内置
 作者应在自己的动作包里提供这两个 id（`ai_visible: false`, `category: passive`）。
 拖动过程中，控制器还会叠加根据鼠标速度计算的轻微惯性摆动。`drag_land` 结束后会自动回到待机。
 
-## 6. 让 AI 会选你的动作
+## 5. 让 AI 会选你的动作
 
 AI 看到的是动作的 `id`、`name`、`category`、`tags`、`duration`、`loop` 和
 `description`，**看不到** `content` 和 `notes`。所以 `description` 要写：
@@ -183,24 +178,13 @@ AI 看到的是动作的 `id`、`name`、`category`、`tags`、`duration`、`loo
 "description": "双手举高，原地开心地小跳两下，发梢跟着弹动。适用于用户完成任务、测试通过、游戏胜利，或收到好消息的时候。"
 ```
 
-## 7. 校验、预览与打包
+## 6. 校验与打包
 
-```powershell
-# 列出动作文件是否可被解析、是否绑定到模型
-.\.venv\Scripts\python.exe -m pytest tests/test_action_runtime.py -q
+- 在设置 → 角色与动作里切换动作即可预览；动作解析失败会在加载时记日志。
+- 套装的 ZIP 结构与 `bundle.json` 字段见 [bundle.schema.json](../schemas/bundle.schema.json)。
+- 服务器会检查每个动作 JSON 的 `model` 是否等于套装 `model_id`。
 
-# 在设置 → 角色与动作中预览动作
-# 或使用开发探针渲染单帧
-.\.venv\Scripts\python.exe scripts\render_probe.py `
-  --model "src\aideskpal\character\示例角色\model.pmx" `
-  --action wave_hello --time 1.0 --out probes\wave.png
-```
-
-市场套装 ZIP 结构与 `bundle.json`、上传校验见
-[plugin-development.md](plugin-development.md)。
-服务器会检查每个动作 JSON 的 `model` 是否等于套装 `model_id`。
-
-## 8. 性能与视觉建议
+## 7. 性能与视觉建议
 
 - 每帧 CPU 蒙皮约 5.9 万顶点，30 FPS；动作只使用骨骼变换，不需要逐帧网格。
 - 单次动作建议 1–8 秒；循环待机 6–12 秒即可。
@@ -209,7 +193,7 @@ AI 看到的是动作的 `id`、`name`、`category`、`tags`、`duration`、`loo
   （`Y` 轴）并让手在身前/身侧露出，视觉更清晰。
 - 该模型没有完整 IK 求解；脚部可能因躯干旋转而离地，这是当前版本已知限制。
 
-## 9. 快速排错
+## 8. 快速排错
 
 | 现象 | 检查 |
 | --- | --- |

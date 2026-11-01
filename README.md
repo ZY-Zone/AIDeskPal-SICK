@@ -85,7 +85,7 @@ API Key 使用 Windows DPAPI 加密，不写入 `settings.json`，也不进入�
 
 ```json
 {
-  "model": "starling",
+  "model": "<model_id>",
   "id": "wave_hello",
   "content": {
     "duration": 3.5,
@@ -105,7 +105,7 @@ API Key 使用 Windows DPAPI 加密，不写入 `settings.json`，也不进入�
 
 - 用户模型的动作放在自己的角色目录中，格式见下。
 - 拖动的保留动作 id：`drag_dangle`、`drag_land`。
-- 完整字段、坐标约定、表情、根骨骼、被动动作、AI 描述写法：
+- 坐标约定、被动动作与 AI 描述写法：
   **[docs/action-authoring.md](docs/action-authoring.md)**。
 - 动作与模型的制作工具属于作者自用脚本，不随仓库发布。
 
