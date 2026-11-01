@@ -31,9 +31,11 @@ server/
 !assets/market/*.zip
 !tests/fixtures/*.zip
 
-# Release build artefacts (the offline wheel bundle is generated on demand)
-vendor/wheels/
+# Release build artefacts (the vendored dependency tree is generated on demand)
+vendor/
 dist/
+.uv-cache/
+.uv-tmp/
 
 # Model assets are user supplied and are never committed
 # Self-contained character resources (PMX/actions/prompt) stay local.

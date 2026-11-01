@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sickcc.online/cw/bundle.schema.json",
+  "title": "AIDeskPal-SICK Model + Action Bundle",
+  "type": "object",
+  "required": ["kind", "model_id", "name", "version", "model", "actions", "character"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1.0", "1.0.0"] },
+    "kind": { "type": "string", "const": "model_action_bundle" },
+    "id": { "type": "string" },
+    "model_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$" },
+    "name": { "type": "string", "maxLength": 120 },
+    "version": { "type": "string", "maxLength": 40 },
+    "author": { "type": "string", "maxLength": 120 },
+    "license": { "type": "string" },
+    "summary": { "type": "string", "maxLength": 300 },
+    "description": { "type": "string", "maxLength": 5000 },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 30 } },
+    "model": {
+      "type": "object",
+      "required": ["pmx"],
+      "properties": {
+        "pmx": { "type": "string", "description": "Relative path inside the ZIP." },
+        "name": { "type": "string" }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Relative action file/directory paths; normally ['actions/']."
+    },
+    "character": {
+      "type": "string",
+      "description": "Relative character.json path inside the ZIP; normally 'character.json'."
+    },
+    "cover": { "type": "string" }
+  }
+}

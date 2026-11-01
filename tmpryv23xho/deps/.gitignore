@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Application data and local backups
+user_data/
+.build_user_data/
+portable_data_backup*/
+temp_*/
+pytest-of-*/
+probes/
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Secrets / local state
+server/
+.env
+.env.local
+*.secret
+*.db
+*.sqlite3
+
+# Archives / seed data
+*.zip
+!assets/market/*.zip
+!tests/fixtures/*.zip
+
+# Release build artefacts (the offline wheel bundle is generated on demand)
+vendor/wheels/
+dist/
+
+# Model assets are user supplied and are never committed
+# Self-contained character resources (PMX/actions/prompt) stay local.
+src/aideskpal/character/*
+!src/aideskpal/character/.gitkeep
+models/**/*.pmx
+models/**/*.PNG
+models/**/*.png
+models/**/*.bmp
+models/**/*.tga
+models/**/*.jpg

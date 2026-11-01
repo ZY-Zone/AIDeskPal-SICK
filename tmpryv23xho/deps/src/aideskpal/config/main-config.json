@@ -1,0 +1,105 @@
+{
+  "model": {
+    "id": "",
+    "name": "",
+    "pmx_path": "",
+    "actions_model_id": "",
+    "show_shadow": true
+  },
+  "window": {
+    "width": 420,
+    "height": 700,
+    "x": null,
+    "y": null,
+    "pet_scale": 1.0,
+    "opacity": 0.98,
+    "always_on_top": true,
+    "click_through_transparent": true,
+    "hide_when_fullscreen": true,
+    "always_visible_on_top": true,
+    "edge_behaviors": true,
+    "edge_fall_chance": 0.4
+  },
+  "ai": {
+    "enabled": true,
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "planner_model": "",
+    "replier_model": "",
+    "actor_model": "",
+    "temperature": 0.85,
+    "max_tokens": 900,
+    "timeout_seconds": 45,
+    "proactive": true,
+    "speech_enabled": true,
+    "tick_seconds": 120,
+    "idle_tick_seconds": 300,
+    "autonomy": 0.7,
+    "max_actions_per_hour": 24,
+    "min_action_gap_seconds": 18,
+    "use_character_profile": true,
+    "personality": "你是用户的桌面伙伴。说话简洁、自然，先观察再回应，尊重用户此刻的专注与安静。你有自己的性格，但绝不假装自己能做到程序能力之外的事情。",
+    "instructions": "优先安静陪伴；不要连续说话；用户专注时降低打扰频率。用户明确要求安静、勿扰或关闭时立即遵守。",
+    "language": "zh-CN",
+    "allowed_actions": [],
+    "blocked_actions": [],
+    "dnd_enabled": false,
+    "dnd_start": "23:30",
+    "dnd_end": "07:30",
+    "memory_enabled": true,
+    "offline_fallback": true,
+    "show_reasoning_in_log": false
+  },
+  "memory": {
+    "enabled": true,
+    "embedding_base_url": "",
+    "embedding_model": "text-embedding-3-small",
+    "top_k": 5,
+    "max_records": 4000,
+    "profile_extraction": true
+  },
+  "perception": {
+    "keyboard_enabled": true,
+    "raw_keys_enabled": false,
+    "foreground_enabled": true,
+    "idle_enabled": true,
+    "idle_threshold_seconds": 180,
+    "poll_seconds": 10,
+    "share_window_titles": true,
+    "excluded_apps": [
+      "keepass",
+      "bitwarden",
+      "1password",
+      "keychain",
+      "authenticator"
+    ],
+    "excluded_title_keywords": [
+      "密码",
+      "password",
+      "登录验证",
+      "private"
+    ]
+  },
+  "market": {
+    "base_url": "http://sickcc.online/cwusr",
+    "username": "",
+    "auto_check": true,
+    "allow_untrusted_plugins": false
+  },
+  "plugins": {
+    "enabled": [
+      "com.aideskpal.focus_orbit"
+    ],
+    "disabled": [],
+    "uninstalled": []
+  },
+  "ui": {
+    "bubble_seconds": 8,
+    "bubble_opacity": 0.94,
+    "accent": "#b9a7ff",
+    "tray_notifications": true,
+    "autostart": false,
+    "language": "zh-CN"
+  },
+  "schema_version": 1
+}

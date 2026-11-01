@@ -23,7 +23,9 @@ classifiers = [
   "Topic :: Desktop Environment",
 ]
 dependencies = [
-  "PySide6>=6.8,<6.13",
+  # Essentials covers QtCore/QtGui/QtWidgets/QtOpenGL, which is all the app uses;
+  # the PySide6 meta package would also pull WebEngine and PDF (~400 MB extra).
+  "PySide6-Essentials>=6.8,<6.13",
   "PyOpenGL>=3.1.7,<4",
   "numpy>=2.0,<3",
   "Pillow>=11,<13",

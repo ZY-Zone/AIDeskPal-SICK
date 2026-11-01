@@ -1,7 +1,8 @@
 # Runtime dependencies, kept in step with [project].dependencies in pyproject.toml.
-# The offline release archive ships matching wheels in vendor/wheels so bootstrap.py
-# can install without network access.
-PySide6>=6.8,<6.13
+# The offline release archive ships a pre-installed copy in vendor/site-packages.
+# Essentials only: the app uses QtCore/QtGui/QtWidgets/QtOpenGL, so the PySide6
+# meta package (and its WebEngine/PDF addons) is unnecessary.
+PySide6-Essentials>=6.8,<6.13
 PyOpenGL>=3.1.7,<4
 numpy>=2.0,<3
 Pillow>=11,<13
