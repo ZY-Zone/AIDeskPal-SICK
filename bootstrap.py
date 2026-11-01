@@ -20,6 +20,9 @@ ROOT = Path(__file__).resolve().parent
 VENV = ROOT / ".venv"
 DATA = ROOT / "user_data"
 LOG = DATA / "bootstrap.log"
+# A release archive may ship the dependency wheels so first run needs no network.
+WHEELS = ROOT / "vendor" / "wheels"
+REQUIREMENTS = ROOT / "requirements.txt"
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
@@ -149,8 +152,9 @@ class BootstrapWindow:
             if sys.version_info < (3, 11):
                 raise RuntimeError("需要 Python 3.11 或更高版本")
             DATA.mkdir(parents=True, exist_ok=True)
+            offline = WHEELS.is_dir() and any(WHEELS.glob("*.whl"))
             with LOG.open("w", encoding="utf-8") as log:
-                log.write(f"root={ROOT}\npython={sys.executable}\n")
+                log.write(f"root={ROOT}\npython={sys.executable}\noffline={offline}\n")
                 if not venv_python().is_file():
                     self.set_status("创建虚拟环境 .venv…")
                     result = subprocess.run(
@@ -163,28 +167,43 @@ class BootstrapWindow:
                     if result.returncode != 0:
                         raise RuntimeError("创建 .venv 失败")
 
-                self.set_status("安装项目依赖（可能需要几分钟）…")
-                uv = shutil.which("uv")
-                if uv:
-                    command = [
-                        uv,
-                        "pip",
-                        "install",
-                        "--python",
-                        str(venv_python()),
-                        "-e",
-                        ".",
-                    ]
-                else:
+                if offline:
                     command = [
                         str(venv_python()),
                         "-m",
                         "pip",
                         "install",
                         "--disable-pip-version-check",
-                        "-e",
-                        ".",
+                        "--no-index",
+                        "--find-links",
+                        str(WHEELS),
+                        "-r",
+                        str(REQUIREMENTS),
                     ]
+                    self.set_status("安装随包依赖（离线）…")
+                else:
+                    self.set_status("安装项目依赖（可能需要几分钟）…")
+                    uv = shutil.which("uv")
+                    if uv:
+                        command = [
+                            uv,
+                            "pip",
+                            "install",
+                            "--python",
+                            str(venv_python()),
+                            "-e",
+                            ".",
+                        ]
+                    else:
+                        command = [
+                            str(venv_python()),
+                            "-m",
+                            "pip",
+                            "install",
+                            "--disable-pip-version-check",
+                            "-e",
+                            ".",
+                        ]
                 log.write("command=" + " ".join(command) + "\n")
                 log.flush()
                 result = subprocess.run(

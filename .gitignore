@@ -31,6 +31,10 @@ server/
 !assets/market/*.zip
 !tests/fixtures/*.zip
 
+# Release build artefacts (the offline wheel bundle is generated on demand)
+vendor/wheels/
+dist/
+
 # Model assets are user supplied and are never committed
 # Self-contained character resources (PMX/actions/prompt) stay local.
 src/aideskpal/character/*
