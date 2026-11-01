@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sickcc.online/cw/action.schema.json",
+  "title": "AIDeskPal-SICK Action",
+  "type": "object",
+  "required": ["model", "id", "content", "description"],
+  "properties": {
+    "schema_version": { "type": "string", "enum": ["1.0", "1.0.0"] },
+    "model": {
+      "type": "string",
+      "description": "The model/profile id this action belongs to.",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+    },
+    "id": {
+      "type": "string",
+      "description": "Stable action id used by the AI actor.",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "maxLength": 80
+    },
+    "name": { "type": "string", "maxLength": 80 },
+    "description": {
+      "type": "string",
+      "description": "AI-facing description: what happens and when to use this action.",
+      "minLength": 1,
+      "maxLength": 800
+    },
+    "category": {
+      "type": "string",
+      "enum": ["idle", "greeting", "emotion", "reaction", "gesture", "affection", "dance", "passive"]
+    },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 30 }, "maxItems": 20 },
+    "priority": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "fade_in": { "type": "number", "minimum": 0, "maximum": 5 },
+    "fade_out": { "type": "number", "minimum": 0, "maximum": 5 },
+    "ai_visible": { "type": "boolean" },
+    "version": { "type": "string", "maxLength": 30 },
+    "author": { "type": "string", "maxLength": 120 },
+    "content": {
+      "type": "object",
+      "required": ["duration", "bones"],
+      "properties": {
+        "duration": { "type": "number", "exclusiveMinimum": 0, "maximum": 600 },
+        "loop": { "type": "boolean" },
+        "fade_in": { "type": "number", "minimum": 0, "maximum": 5 },
+        "fade_out": { "type": "number", "minimum": 0, "maximum": 5 },
+        "bones": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "rotation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["t", "rot"],
+                  "properties": {
+                    "t": { "type": "number", "minimum": 0 },
+                    "rot": {
+                      "type": "array",
+                      "items": { "type": "number" },
+                      "minItems": 3,
+                      "maxItems": 3,
+                      "description": "Local Euler [x,y,z] in degrees."
+                    },
+                    "ease": { "type": "string", "enum": ["linear", "smooth", "flow", "ease_in", "ease_out", "ease_in_out", "sine", "constant"] }
+                  }
+                }
+              },
+              "translation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["t", "trans"],
+                  "properties": {
+                    "t": { "type": "number", "minimum": 0 },
+                    "trans": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+                    "ease": { "type": "string", "enum": ["linear", "smooth", "flow", "ease_in", "ease_out", "ease_in_out", "sine", "constant"] }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "morphs": {
+          "type": "object",
+          "description": "Morph name -> keyframes with t and w (0..1).",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["t", "w"],
+              "properties": {
+                "t": { "type": "number", "minimum": 0 },
+                "w": { "type": "number", "minimum": 0, "maximum": 1 },
+                "ease": { "type": "string" }
+              }
+            }
+          }
+        },
+        "notes": { "type": "string", "maxLength": 2000 }
+      }
+    }
+  }
+}
