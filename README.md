@@ -90,7 +90,7 @@ API Key 使用 Windows DPAPI 加密，不写入 `settings.json`，也不进入�
   "content": {
     "duration": 3.5,
     "bones": {
-      "左腕": {
+      "<骨骼名>": {
         "rotation": [
           {"t": 0.0, "rot": [0, -50, -40]},
           {"t": 0.5, "rot": [0, -14, 66]},
@@ -103,6 +103,7 @@ API Key 使用 Windows DPAPI 加密，不写入 `settings.json`，也不进入�
 }
 ```
 
+- `bones` / `morphs` 的键是目标模型自己的骨骼名与表情名，各模型不同，需按你的 PMX 填写。
 - 用户模型的动作放在自己的角色目录中，格式见下。
 - 拖动的保留动作 id：`drag_dangle`、`drag_land`。
 - 坐标约定、被动动作与 AI 描述写法：
