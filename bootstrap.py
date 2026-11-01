@@ -20,9 +20,12 @@ ROOT = Path(__file__).resolve().parent
 VENV = ROOT / ".venv"
 DATA = ROOT / "user_data"
 LOG = DATA / "bootstrap.log"
-# The "with dependencies" release ships a pre-installed package tree here, so
-# first run needs neither a virtualenv nor network access.
-VENDOR_SITE = ROOT / "vendor" / "site-packages"
+# The "with dependencies" release ships a wheelhouse here: uv installs from these
+# files without touching the network, and because the wheels carry their own
+# CPython tags uv simply picks the set that matches the interpreter on this
+# machine.  That keeps one archive valid for every supported Python version.
+VENDOR_WHEELS = ROOT / "vendor" / "wheels"
+REQUIREMENTS = ROOT / "requirements.txt"
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
@@ -34,39 +37,14 @@ def venv_pythonw() -> Path:
     return VENV / "Scripts" / "pythonw.exe"
 
 
-def has_vendor_site() -> bool:
-    return (VENDOR_SITE / "PySide6").is_dir()
-
-
-def vendor_python_tag() -> str:
-    """Python ``major.minor`` the vendored tree was built for (empty if unknown).
-
-    The bundled packages contain compiled extensions, so the archive only works
-    with that exact interpreter version.  Reading it lets us say so plainly
-    instead of surfacing a numpy C-extension traceback.
-    """
-    marker = ROOT / "vendor" / "PYTHON_VERSION"
-    try:
-        return marker.read_text(encoding="utf-8").strip()
-    except OSError:
-        return ""
-
-
-def vendor_version_ok() -> bool:
-    expected = vendor_python_tag()
-    if not expected:
-        return True
-    actual = f"{sys.version_info.major}.{sys.version_info.minor}"
-    return actual == expected
+def has_wheelhouse() -> bool:
+    return VENDOR_WHEELS.is_dir() and any(VENDOR_WHEELS.glob("*.whl"))
 
 
 def launch_env() -> dict[str, str]:
-    """Environment that puts the app and its dependencies on sys.path."""
-    parts = [str(ROOT / "src")]
-    if has_vendor_site():
-        parts.append(str(VENDOR_SITE))
+    """Environment that puts the app on sys.path."""
     env = os.environ.copy()
-    env["PYTHONPATH"] = os.pathsep.join(parts)
+    env["PYTHONPATH"] = str(ROOT / "src")
     env["AIDESKPAL_DATA_DIR"] = str(DATA)
     return env
 
@@ -186,8 +164,9 @@ class BootstrapWindow:
             if sys.version_info < (3, 11):
                 raise RuntimeError("需要 Python 3.11 或更高版本")
             DATA.mkdir(parents=True, exist_ok=True)
+            offline = has_wheelhouse()
             with LOG.open("w", encoding="utf-8") as log:
-                log.write(f"root={ROOT}\npython={sys.executable}\n")
+                log.write(f"root={ROOT}\npython={sys.executable}\noffline={offline}\n")
                 if not venv_python().is_file():
                     self.set_status("创建虚拟环境 .venv…")
                     result = subprocess.run(
@@ -200,28 +179,60 @@ class BootstrapWindow:
                     if result.returncode != 0:
                         raise RuntimeError("创建 .venv 失败")
 
-                self.set_status("安装项目依赖（可能需要几分钟）…")
                 uv = shutil.which("uv")
-                if uv:
-                    command = [
-                        uv,
-                        "pip",
-                        "install",
-                        "--python",
-                        str(venv_python()),
-                        "-e",
-                        ".",
-                    ]
+                if offline:
+                    # Install the shipped wheels with uv: --no-index keeps uv from
+                    # contacting the network, and it selects the wheel whose
+                    # CPython tag matches this interpreter automatically.
+                    self.set_status("从随包依赖安装（离线，无需联网）…")
+                    if uv:
+                        command = [
+                            uv,
+                            "pip",
+                            "install",
+                            "--python",
+                            str(venv_python()),
+                            "--no-index",
+                            "--find-links",
+                            str(VENDOR_WHEELS),
+                            "--requirements",
+                            str(REQUIREMENTS),
+                        ]
+                    else:
+                        command = [
+                            str(venv_python()),
+                            "-m",
+                            "pip",
+                            "install",
+                            "--disable-pip-version-check",
+                            "--no-index",
+                            "--find-links",
+                            str(VENDOR_WHEELS),
+                            "-r",
+                            str(REQUIREMENTS),
+                        ]
                 else:
-                    command = [
-                        str(venv_python()),
-                        "-m",
-                        "pip",
-                        "install",
-                        "--disable-pip-version-check",
-                        "-e",
-                        ".",
-                    ]
+                    self.set_status("安装项目依赖（需要联网，可能需要几分钟）…")
+                    if uv:
+                        command = [
+                            uv,
+                            "pip",
+                            "install",
+                            "--python",
+                            str(venv_python()),
+                            "-e",
+                            ".",
+                        ]
+                    else:
+                        command = [
+                            str(venv_python()),
+                            "-m",
+                            "pip",
+                            "install",
+                            "--disable-pip-version-check",
+                            "-e",
+                            ".",
+                        ]
                 log.write("command=" + " ".join(command) + "\n")
                 log.flush()
                 result = subprocess.run(
@@ -232,6 +243,13 @@ class BootstrapWindow:
                     creationflags=NO_WINDOW,
                 )
                 if result.returncode != 0:
+                    if offline:
+                        raise RuntimeError(
+                            "随包依赖与当前 Python 版本不匹配（pip/uv 返回 "
+                            f"{result.returncode}）。请改用受支持的 Python 版本，"
+                            "或使用「纯代码版」压缩包联网安装。日志："
+                            f"{LOG}"
+                        )
                     raise RuntimeError(f"pip/uv 返回 {result.returncode}")
             self.root.after(0, self.finish)
         except Exception as exc:
@@ -246,40 +264,9 @@ def _launch(executable: Path) -> bool:
         return False
 
 
-def _report_version_mismatch() -> None:
-    expected = vendor_python_tag()
-    actual = f"{sys.version_info.major}.{sys.version_info.minor}"
-    message = (
-        f"这个版本自带已编译的依赖，只能用 Python {expected}（64 位）运行。\n"
-        f"当前解释器是 Python {actual}。\n\n"
-        f"请安装 Python {expected} 后重试，或改用「纯代码版」压缩包"
-        f"（它会用你现有的 Python 现场安装依赖）。"
-    )
-    try:
-        import tkinter as tk
-        from tkinter import messagebox
-
-        root = tk.Tk()
-        root.withdraw()
-        messagebox.showerror("AIDeskPal-SICK", message)
-        root.destroy()
-    except Exception:
-        print(message, file=sys.stderr)
-
-
 def main() -> int:
-    # The "with dependencies" release carries vendor/site-packages, so there is
-    # nothing to install: start the app with the system interpreter directly.
-    if has_vendor_site():
-        if not vendor_version_ok():
-            _report_version_mismatch()
-            return 2
-        candidate = Path(sys.executable)
-        pythonw = candidate.with_name("pythonw.exe")
-        for executable in (pythonw, candidate):
-            if executable.is_file() and _launch(executable):
-                return 0
-
+    # A ready .venv means the dependencies are already installed, whichever way
+    # they arrived (wheelhouse or online).  Otherwise run the guided install.
     if venv_pythonw().is_file() and _launch(venv_pythonw()):
         return 0
     BootstrapWindow().run()
