@@ -45,13 +45,13 @@
 | `src/aideskpal/plugins/` | 插件清单、权限门面、加载器、事件总线 |
 | `src/aideskpal/market/` | 市场 HTTP 客户端、ZIP 安装器 |
 | `src/aideskpal/ui/` | 桌宠窗口、气泡、聊天、pystray 托盘、设置窗口 |
-| `actions/` | 内置示例动作包 |
-| `plugins/` | 内置示例插件 |
-| `sample_content/starling/` | 原创、MIT 的示例 PMX 与套装 |
+| `assets/` | 应用图标 |
+| `plugins/` | 本地插件目录（仓库不带插件） |
 | `schemas/` | 动作、插件清单、套装清单的 JSON Schema |
 | `docs/` | 开发与架构文档 |
-| `tools/` | 动作生成、示例模型生成、PMX 检查 |
-| `scripts/` | 渲染/窗口/UI 开发探针 |
+
+动作与模型制作工具不随仓库发布：它们属于作者自用的开发脚本，二次开发者可按
+`docs/action-authoring.md` 的动作格式自行实现。
 
 ## 3. PMX 与渲染
 

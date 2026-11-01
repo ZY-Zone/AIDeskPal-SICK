@@ -104,11 +104,11 @@ API Key 使用 Windows DPAPI 加密，不写入 `settings.json`，也不进入�
 }
 ```
 
-- 内置示例动作：`actions/starling/`。用户模型的动作放在自己的角色目录中。
+- 用户模型的动作放在自己的角色目录中，格式见下。
 - 拖动的保留动作 id：`drag_dangle`、`drag_land`。
 - 完整字段、坐标约定、表情、根骨骼、被动动作、AI 描述写法：
   **[docs/action-authoring.md](docs/action-authoring.md)**。
-- 查看模型骨骼/表情：`python tools/dump_pmx.py "path\to\model.pmx"`。
+- 动作与模型的制作工具属于作者自用脚本，不随仓库发布。
 
 ## 插件开发
 
@@ -182,14 +182,13 @@ aideskpal-sick/
 ├─ assets/               # 应用图标
 ├─ plugins/              # 本地插件目录（仓库不自带插件）
 ├─ schemas/              # JSON Schema
-├─ docs/                 # 开发与架构文档
-├─ tools/                # PMX/动作制作工具（二次开发用）
-└─ scripts/              # 渲染、窗口、命中测试、Web 截图探针
+└─ docs/                 # 开发与架构文档
 ```
 
 角色资源（PMX、贴图、动作）不随仓库发布：把自包含角色包放进
-`src/aideskpal/character/<model_id>/`，或用客户端内的资源市场安装。测试由二次开发者
-自行编写——仓库只提供客户端程序。
+`src/aideskpal/character/<model_id>/`，或用客户端内的资源市场安装。
+仓库只提供客户端程序——测试，以及动作/模型的制作工具，都由作者自用、不随仓库发布，
+二次开发者可按 `docs/` 里的格式自行实现。
 
 ## 资源市场
 
@@ -217,8 +216,7 @@ aideskpal-sick/
 
 ## 许可证与素材
 
-- **代码**（`src/`、`tools/`、`scripts/`、`docs/`）：MIT，见 [LICENSE](LICENSE)。
-  MIT，由本项目程序化生成，见其 README。
+- **代码**（`src/`、`docs/`、`schemas/`）：MIT，见 [LICENSE](LICENSE)。
 - 用户自行导入的模型与素材不包含在本仓库或发行包中；版权归原作者所有。
   用户需自行确认模型、动作和素材的授权与使用条款。
 - 市场创作者需自行确保上传资源拥有授权；市场不因此转移版权。
