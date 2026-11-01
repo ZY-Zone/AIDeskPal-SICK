@@ -1,9 +1,0 @@
-# Runtime dependencies, kept in step with [project].dependencies in pyproject.toml.
-# The offline release archive ships matching wheels in vendor/wheels so bootstrap.py
-# can install without network access.
-PySide6>=6.8,<6.13
-PyOpenGL>=3.1.7,<4
-numpy>=2.0,<3
-Pillow>=11,<13
-pystray>=0.19,<1
-httpx>=0.27,<1
