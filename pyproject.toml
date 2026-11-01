@@ -48,10 +48,12 @@ Source = "https://github.com/ZY-Zone/AIDeskPal-SICK.git"
 packages = ["src/aideskpal"]
 
 # No testpaths entry: the repository ships the client only, and secondary
-# developers point this at their own test tree.
+# developers point this at their own test tree.  vendor/ holds the pre-installed
+# dependency tree for release archives and must never be collected.
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 addopts = "-ra"
+norecursedirs = ["vendor", "dist", "build", ".venv", ".uv-cache", ".uv-tmp", "node_modules"]
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.ruff]
