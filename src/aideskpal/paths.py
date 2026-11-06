@@ -19,9 +19,18 @@ from pathlib import Path
 
 
 def _resource_root() -> Path:
+    """Directory that holds read-only resources (plugins, models, actions).
+
+    Frozen builds differ: PyInstaller unpacks into ``sys._MEIPASS`` while
+    cx_Freeze keeps everything next to the executable.  Check the marker first,
+    because ``sys.frozen`` is set by both but ``_MEIPASS`` only exists for
+    PyInstaller — indexing it unconditionally used to raise for cx_Freeze.
+    """
+    unpack_dir = getattr(sys, "_MEIPASS", None)
+    if unpack_dir:
+        return Path(unpack_dir)
     if getattr(sys, "frozen", False):
-        # PyInstaller unpack directory.
-        return Path(getattr(sys, "_MEIPASS"))
+        return _executable_dir()
     return Path(__file__).resolve().parents[2]
 
 

@@ -37,6 +37,13 @@ dist/
 .uv-cache/
 .uv-tmp/
 
+# cx_Freeze build (author-only).  cx_Freeze is a build tool, never a runtime
+# dependency, so it stays out of pyproject.toml and out of the published tree.
+/tools/build_frozen.py
+/tools/frozen_entry.py
+build/
+frozen-crash.log
+
 # Model assets are user supplied and are never committed
 # Self-contained character resources (PMX/actions/prompt) stay local.
 src/aideskpal/character/*

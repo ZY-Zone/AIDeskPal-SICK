@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__version__ = "1.0.0"
+__version__ = "0.1-DEV1"
 APP_NAME = "AIDeskPal-SICK"
 APP_DISPLAY_NAME = "AIDeskPal-SICK"
 APP_TAGLINE = "与你同行的桌面伙伴"

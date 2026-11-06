@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aideskpal-sick"
-version = "1.0.0"
+version = "0.1-DEV1"
 description = "AIDeskPal-SICK — an AI-driven PMX desktop companion for Windows 10+"
 readme = "README.md"
 requires-python = ">=3.11"
